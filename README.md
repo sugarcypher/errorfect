@@ -2,44 +2,94 @@
 
 WordPress development project.
 
-## Setup
+## ✅ Setup Complete
 
-### Prerequisites
-- PHP 7.4 or higher
-- MySQL/MariaDB
-- WordPress CLI (WP-CLI)
+### Installed Components
+- ✅ PHP 8.4.14 (via Homebrew)
+- ✅ WordPress CLI (WP-CLI) 2.12.0 (local installation)
+- ✅ Git repository initialized
+- ✅ GitHub repository created
 
-### Installation
+## Quick Start
 
-1. Install PHP (if not already installed):
+### Using WordPress CLI
+
+The project includes a local WP-CLI installation. Use it with:
+
 ```bash
-brew install php
+php wp <command>
 ```
 
-2. Install WP-CLI globally:
+For example:
 ```bash
-curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-chmod +x wp-cli.phar
-sudo mv wp-cli.phar /usr/local/bin/wp
+php wp --info
+php wp core download
+php wp plugin list
 ```
 
-Or use the local version:
+### Connect to WordPress
+
+Run the connection helper script:
 ```bash
-./wp --info
+./connect-wordpress.sh
 ```
 
-3. Connect to WordPress:
+Or manually:
+
+1. **Download WordPress core:**
 ```bash
-# Download WordPress core
-wp core download
+php wp core download
+```
 
-# Create wp-config.php
-wp config create --dbname=your_db_name --dbuser=your_db_user --dbpass=your_db_pass
+2. **Create database configuration:**
+```bash
+php wp config create --dbname=errorfect_db --dbuser=root --dbpass=YOUR_PASSWORD
+```
 
-# Or connect to existing WordPress installation
-wp core download --path=wp
+3. **Install WordPress:**
+```bash
+php wp core install --url=http://localhost/errorfect --title='Errorfect' --admin_user=admin --admin_password=YOUR_PASSWORD --admin_email=admin@example.com
+```
+
+### Connect to Existing WordPress Site
+
+If you have an existing WordPress installation:
+
+```bash
+php wp core download --path=/path/to/wordpress
+cd /path/to/wordpress
+php wp config create --dbname=DB_NAME --dbuser=DB_USER --dbpass=DB_PASS
+```
+
+## Common WP-CLI Commands
+
+```bash
+# Plugin management
+php wp plugin list
+php wp plugin install <plugin-name>
+php wp plugin activate <plugin-name>
+
+# Theme management
+php wp theme list
+php wp theme install <theme-name>
+php wp theme activate <theme-name>
+
+# Database operations
+php wp db export backup.sql
+php wp db import backup.sql
+
+# User management
+php wp user list
+php wp user create username email@example.com --role=administrator
 ```
 
 ## GitHub Repository
-Repository: https://github.com/sugarcypher/errorfect
+🔗 https://github.com/sugarcypher/errorfect
+
+## Files
+
+- `wp` - WordPress CLI executable (use with `php wp`)
+- `setup-wordpress.sh` - Initial setup script
+- `connect-wordpress.sh` - WordPress connection helper
+- `wp-config-example.php` - Example WordPress configuration file
 
