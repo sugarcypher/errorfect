@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Errorfect WordPress Monetization Plugins Setup Script
+
+echo "💰 Setting up Errorfect with monetization plugins..."
+echo ""
+
+# After WordPress is installed, install these plugins:
+
+echo "📦 Essential Monetization Plugins:"
+echo ""
+echo "1. Easy Digital Downloads (Free)"
+echo "   - Sell digital products (PDFs, courses)"
+echo "   - Lightweight and fast"
+echo ""
+echo "2. Stripe Payment Gateway for EDD (Paid ~$99/year)"
+echo "   - Process credit card payments"
+echo "   - Alternative: PayPal for EDD (Free)"
+echo ""
+echo "3. ConvertKit (Free)"
+echo "   - Email marketing and automation"
+echo "   - Lead magnets and email sequences"
+echo ""
+echo "4. OptinMonster (Paid ~$9-29/month)"
+echo "   - Lead capture popups and forms"
+echo "   - Alternative: ConvertBox (Free tier available)"
+echo ""
+echo "5. MemberPress (Paid ~$149/year)"
+echo "   - Membership and subscription management"
+echo "   - Restrict content, recurring payments"
+echo ""
+echo "6. Calendly (Free/Paid)"
+echo "   - Workshop and coaching booking"
+echo "   - Integrates with WordPress"
+echo ""
+echo "7. WooCommerce (Free) - Alternative to EDD"
+echo "   - Full e-commerce solution"
+echo "   - More features but heavier"
+echo ""
+echo "📝 To install plugins after WordPress setup:"
+echo ""
+echo "php wp plugin install easy-digital-downloads --activate"
+echo "php wp plugin install convertkit --activate"
+echo "php wp plugin install woocommerce --activate"
+echo ""
+echo "For paid plugins, download from their websites and install manually."
+
