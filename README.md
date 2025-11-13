@@ -1,6 +1,17 @@
 # Errorfect
 
-WordPress development project.
+**Language Spellbreaking & Lexicon Alchemy**
+
+> A method for breaking open loaded English words ("normal," "perfect," "crazy," etc.) to expose their hidden rules and rewrite how people think and feel.
+
+## What is Errorfect?
+
+**Errorfect** is born from the art piece where "PERFECT" had its first letter removed, revealing **"error-fect"** — exposing that perfection is built from error, not free from it.
+
+The method deconstructs weaponized words through:
+- **Etymology** - Tracing words to their original meanings
+- **Wordplay** - Breaking words apart to reveal hidden structures (normal → or/mal, perfect → error-fect)
+- **Epistemology** - Understanding how language shapes thought and reality
 
 ## ✅ Setup Complete
 
