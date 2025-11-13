@@ -97,10 +97,38 @@ php wp user create username email@example.com --role=administrator
 ## GitHub Repository
 🔗 https://github.com/sugarcypher/errorfect
 
+## 💰 Monetization Setup
+
+This project is configured for monetization from day one. See:
+
+- **MONETIZATION-QUICKSTART.md** - Step-by-step guide to start earning
+- **MONETIZATION-SETUP.md** - Complete monetization strategy and plugins
+- **PROJECT-VISION.md** - Full project vision and revenue streams
+
+### Revenue Streams
+1. **Digital Products** ($10-30) - PDFs, workbooks, mini-courses
+2. **Live Workshops** ($50-150) - Group sessions and labs
+3. **1:1 Coaching** ($200-500/session) - Personalized language deprogramming
+4. **Membership** ($20-50/month) - Premium content and community
+5. **Affiliate/Partnerships** - Book and tool recommendations
+
+### Quick Monetization Setup
+```bash
+# Install essential monetization plugins
+php wp plugin install easy-digital-downloads --activate
+php wp plugin install woocommerce --activate
+php wp plugin install convertkit --activate
+```
+
 ## Files
 
 - `wp` - WordPress CLI executable (use with `php wp`)
 - `setup-wordpress.sh` - Initial setup script
 - `connect-wordpress.sh` - WordPress connection helper
+- `wp-plugins-setup.sh` - Monetization plugins guide
 - `wp-config-example.php` - Example WordPress configuration file
+- `MONETIZATION-QUICKSTART.md` - **Start here for monetization**
+- `MONETIZATION-SETUP.md` - Complete monetization strategy
+- `PROJECT-VISION.md` - Project vision and roadmap
+- `CONTENT-OUTLINE.md` - Content plan and blog post ideas
 
