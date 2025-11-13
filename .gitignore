@@ -8,6 +8,10 @@ wp-content/wp-cache-config.php
 wp-content/cache/
 wp-content/debug.log
 
+# WordPress plugins (exclude from git - install via WP-CLI)
+wp-content/plugins/
+!wp-content/plugins/index.php
+
 # Dependencies
 node_modules/
 vendor/
