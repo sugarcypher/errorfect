@@ -12,6 +12,11 @@ wp-content/debug.log
 wp-content/plugins/
 !wp-content/plugins/index.php
 
+# Images folder (keep structure, but ignore large files)
+images/*
+!images/.gitkeep
+!images/*.md
+
 # Dependencies
 node_modules/
 vendor/
