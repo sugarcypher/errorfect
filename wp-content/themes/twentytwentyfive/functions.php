@@ -156,9 +156,6 @@ if ( ! function_exists( 'twentytwentyfive_format_binding' ) ) :
 		}
 	}
 endif;
-<?php
-// Errorfect Logo Cycler
-require_once get_template_directory() . '/functions-logo-cycler.php';
 
 // Errorfect Hero Section
 require_once get_template_directory() . '/functions-hero.php';
