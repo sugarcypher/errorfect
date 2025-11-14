@@ -4,7 +4,7 @@
  */
 
 class LogoCycler {
-    constructor(containerSelector, logoPath = '/images/branding/logo/') {
+    constructor(containerSelector, logoPath = '/images/branding/logos/') {
         this.container = document.querySelector(containerSelector);
         this.logoPath = logoPath;
         this.logos = [];
@@ -33,9 +33,15 @@ class LogoCycler {
     }
 
     async loadLogos() {
-        // Option 1: Fetch from WordPress API (if available)
+        // Option 1: Use logos passed from WordPress
+        if (typeof errorfectLogos !== 'undefined' && errorfectLogos.logos && errorfectLogos.logos.length > 0) {
+            this.logos = errorfectLogos.logos;
+            return;
+        }
+
+        // Option 2: Fetch from WordPress API (if available)
         try {
-            const response = await fetch('/wp-json/wp/v2/media?media_type=image&search=branding/logo');
+            const response = await fetch('/wp-json/wp/v2/media?media_type=image&search=branding/logos');
             if (response.ok) {
                 const media = await response.json();
                 this.logos = media.map(item => item.source_url);
@@ -45,15 +51,9 @@ class LogoCycler {
             // Fall through to manual list
         }
 
-        // Option 2: Use predefined list (update this with your actual logo filenames)
-        // You can also generate this list server-side
-        this.logos = [
-            'logo-1.svg',
-            'logo-2.svg',
-            'logo-3.svg',
-            'logo-4.svg',
-            'logo-5.svg'
-        ].map(filename => this.logoPath + filename);
+        // Option 3: Try to fetch logo list from a JSON endpoint or scan directory
+        // For static sites, you may need to generate this list server-side
+        console.warn('LogoCycler: No logos found. Make sure logos are in images/branding/logos/');
     }
 
     cycleLogo() {

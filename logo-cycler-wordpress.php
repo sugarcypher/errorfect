@@ -15,8 +15,8 @@ function errorfect_enqueue_logo_cycler() {
     );
     
     // Pass logo list to JavaScript
-    $logo_dir = get_template_directory() . '/images/branding/logo/';
-    $logo_url = get_template_directory_uri() . '/images/branding/logo/';
+    $logo_dir = get_template_directory() . '/images/branding/logos/';
+    $logo_url = get_template_directory_uri() . '/images/branding/logos/';
     $logos = array();
     
     if (is_dir($logo_dir)) {
@@ -26,6 +26,8 @@ function errorfect_enqueue_logo_cycler() {
                 $logos[] = $logo_url . $file;
             }
         }
+        // Sort logos for consistent ordering
+        sort($logos);
     }
     
     wp_localize_script('errorfect-logo-cycler', 'errorfectLogos', array(
@@ -42,18 +44,20 @@ function errorfect_logo_cycler_shortcode($atts) {
         'alt' => 'Errorfect Logo'
     ), $atts);
     
-    $logo_dir = get_template_directory() . '/images/branding/logo/';
-    $logo_url = get_template_directory_uri() . '/images/branding/logo/';
+    $logo_dir = get_template_directory() . '/images/branding/logos/';
+    $logo_url = get_template_directory_uri() . '/images/branding/logos/';
     $first_logo = '';
     
     if (is_dir($logo_dir)) {
         $files = scandir($logo_dir);
+        $logo_files = array();
         foreach ($files as $file) {
             if (in_array(strtolower(pathinfo($file, PATHINFO_EXTENSION)), ['svg', 'png', 'jpg', 'jpeg', 'webp'])) {
-                $first_logo = $logo_url . $file;
-                break;
+                $logo_files[] = $logo_url . $file;
             }
         }
+        sort($logo_files);
+        $first_logo = !empty($logo_files) ? $logo_files[0] : '';
     }
     
     if ($first_logo) {
