@@ -13,9 +13,15 @@ wp-content/plugins/
 !wp-content/plugins/index.php
 
 # Images folder (keep structure, but ignore large files)
+# To commit specific images, use: git add -f images/path/to/image.jpg
 images/*
 !images/.gitkeep
 !images/*.md
+!images/**/*.jpg
+!images/**/*.jpeg
+!images/**/*.png
+!images/**/*.svg
+!images/**/*.webp
 
 # Dependencies
 node_modules/
