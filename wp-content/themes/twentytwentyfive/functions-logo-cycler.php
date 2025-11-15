@@ -34,6 +34,14 @@ function errorfect_enqueue_logo_cycler() {
         'logos' => $logos,
         'path' => $logo_url
     ));
+    
+    // Enqueue glossary styles
+    wp_enqueue_style(
+        'errorfect-glossary',
+        get_template_directory_uri() . '/glossary-style.css',
+        array(),
+        '1.0.0'
+    );
 }
 add_action('wp_enqueue_scripts', 'errorfect_enqueue_logo_cycler');
 

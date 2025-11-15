@@ -1,0 +1,207 @@
+/* Errorfect Glossary Styles */
+
+.errorfect-glossary {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.7;
+    color: #1a1a1a;
+}
+
+.glossary-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 3px solid #667eea;
+}
+
+.glossary-header h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.glossary-subtitle {
+    font-size: 1.25rem;
+    color: #666;
+    font-weight: 300;
+    margin: 0;
+}
+
+.word-breakdown {
+    margin: 2.5rem 0;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-left: 4px solid #667eea;
+    border-radius: 4px;
+}
+
+.word-breakdown h2 {
+    font-size: 1.75rem;
+    margin: 0 0 1rem 0;
+    color: #667eea;
+    font-weight: 600;
+}
+
+.word-breakdown ul {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.word-breakdown li {
+    margin: 0.75rem 0;
+}
+
+.word-breakdown strong {
+    color: #764ba2;
+    font-weight: 600;
+}
+
+.glossary-divider {
+    border: none;
+    border-top: 2px solid #e0e0e0;
+    margin: 3rem 0;
+    opacity: 0.5;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 3rem 0 1.5rem 0;
+    color: #333;
+    text-align: center;
+    padding: 1rem;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-radius: 8px;
+}
+
+.intro-text {
+    font-size: 1.125rem;
+    color: #666;
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.type-group {
+    margin: 2.5rem 0;
+    padding: 2rem;
+    background: #fff;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.type-group:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.type-group h3 {
+    font-size: 1.5rem;
+    margin: 0 0 1rem 0;
+    color: #764ba2;
+    font-weight: 600;
+}
+
+.type-group ul {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.type-group li {
+    margin: 0.5rem 0;
+    font-weight: 500;
+}
+
+.hero-pitch {
+    margin: 3rem 0;
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    border-radius: 12px;
+    border: 2px solid #667eea;
+}
+
+.hero-pitch h3 {
+    font-size: 1.25rem;
+    color: #764ba2;
+    margin: 2rem 0 0.5rem 0;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.875rem;
+}
+
+.hero-pitch h3:first-child {
+    margin-top: 0;
+}
+
+.pitch-headline {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0.5rem 0 1.5rem 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.pitch-subheadline {
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: #333;
+    margin: 0 0 2rem 0;
+    line-height: 1.6;
+}
+
+.hero-pitch ul {
+    margin: 1.5rem 0;
+    padding-left: 1.5rem;
+}
+
+.hero-pitch li {
+    margin: 1rem 0;
+    line-height: 1.8;
+}
+
+.hero-pitch strong {
+    color: #667eea;
+    font-weight: 600;
+}
+
+.hero-pitch em {
+    font-style: italic;
+    color: #666;
+}
+
+@media (max-width: 768px) {
+    .errorfect-glossary {
+        padding: 1rem;
+    }
+    
+    .glossary-header h1 {
+        font-size: 2rem;
+    }
+    
+    .word-breakdown h2 {
+        font-size: 1.5rem;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    .pitch-headline {
+        font-size: 2rem;
+    }
+    
+    .pitch-subheadline {
+        font-size: 1.25rem;
+    }
+}
+
