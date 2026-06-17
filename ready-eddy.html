@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Errorfect — The (r)eady eddy</title>
+  <meta name="description" content="A word-level autopsy of 'ready': how a single word becomes a permission gate that traps goal-directed energy in a self-reinforcing cognitive loop — and how to break it." />
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* Background system: randomized Errorfect logo each load + legibility overlay */
+    .bg-layer{
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      filter: saturate(1.05) contrast(1.05);
+      transform: scale(1.02);
+    }
+
+    .bg-overlay{
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(0,245,255,0.10), rgba(0,0,0,0) 45%),
+        radial-gradient(circle at 70% 60%, rgba(255,0,110,0.10), rgba(0,0,0,0) 50%),
+        linear-gradient(180deg, rgba(0,0,0,0.68), rgba(0,0,0,0.86));
+      pointer-events: none;
+    }
+
+    body {
+      font-family: "Courier New", monospace;
+      background: transparent;
+      color: #e0e0e0;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Keep all content above overlay */
+    .hero, section, footer { position: relative; z-index: 2; }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      background: radial-gradient(circle at center, rgba(26,26,46,0.72) 0%, rgba(10,10,10,0.62) 100%);
+    }
+
+    .glitch-container {
+      position: relative;
+      font-size: clamp(3rem, 10vw, 8rem);
+      font-weight: bold;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .glitch {
+      position: relative;
+      color: #ff006e;
+      text-shadow: 0 0 20px rgba(255, 0, 110, 0.5);
+    }
+
+    .masked-letter {
+      color: #ff006e;
+      text-decoration: line-through;
+      opacity: 0.5;
+    }
+
+    .subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      color: #8892b0;
+      text-align: center;
+      margin-bottom: 3rem;
+      max-width: 980px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 2rem;
+      color: #00f5ff;
+      text-decoration: none;
+      font-size: 0.95rem;
+      letter-spacing: 0.04em;
+      border: 1px solid #00f5ff55;
+      padding: 0.4rem 0.9rem;
+      border-radius: 999px;
+      background: rgba(0, 245, 255, 0.06);
+      transition: all 0.3s ease;
+    }
+    .back-link:hover { border-color: #00f5ff; box-shadow: 0 0 18px rgba(0,245,255,0.25); }
+
+    .scroll-indicator {
+      font-size: 2rem;
+      animation: bounce 2s infinite;
+      color: #00f5ff;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(10px); }
+    }
+
+    section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      color: #ff006e;
+      margin-bottom: 2rem;
+      position: relative;
+      display: inline-block;
+    }
+
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, #ff006e, #00f5ff);
+    }
+
+    .field-notes {
+      background: linear-gradient(135deg, rgba(22,33,62,0.92) 0%, rgba(15,52,96,0.92) 100%);
+      padding: 3rem;
+      border-radius: 8px;
+      border-left: 4px solid #ff006e;
+      margin: 3rem 0;
+      backdrop-filter: blur(2px);
+    }
+
+    .field-notes p {
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+      color: #ccd6f6;
+    }
+    .field-notes p:last-child { margin-bottom: 0; }
+
+    .field-notes h3 {
+      color: #00f5ff;
+      margin: 0.5rem 0 1rem;
+      font-size: 1.25rem;
+      letter-spacing: 0.02em;
+    }
+
+    .key-insight {
+      background: rgba(10,10,10,0.85);
+      padding: 2rem;
+      border-radius: 8px;
+      border: 2px solid #00f5ff;
+      margin: 2rem 0;
+      font-size: 1.2rem;
+      color: #00f5ff;
+      text-align: center;
+      font-weight: bold;
+      backdrop-filter: blur(2px);
+    }
+
+    .surgical {
+      color: #ff006e;
+      font-style: italic;
+    }
+
+    .word-reveal {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+
+    .revealed-word {
+      color: #00f5ff;
+      display: block;
+      font-size: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .arrow {
+      display: inline-block;
+      color: #ff006e;
+      margin: 0 1rem;
+      font-size: 1.5rem;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.85rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid #00f5ff55;
+      color: #00f5ff;
+      margin: 0.2rem 0.35rem 0 0;
+      background: rgba(0, 245, 255, 0.06);
+      white-space: nowrap;
+    }
+
+    .protocol-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0 1rem;
+    }
+
+    .protocol-step {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid #00f5ff33;
+      border-radius: 10px;
+      padding: 1.25rem 1.25rem 1.1rem;
+      backdrop-filter: blur(2px);
+    }
+
+    .protocol-step h3 {
+      color: #00f5ff;
+      margin-bottom: 0.65rem;
+      font-size: 1.1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .protocol-step p {
+      color: #ccd6f6;
+      margin-bottom: 0.75rem;
+      line-height: 1.65;
+      font-size: 1rem;
+    }
+    .protocol-step p:last-child { margin-bottom: 0; }
+
+    .protocol-step .small {
+      color: #8892b0;
+      font-size: 0.95rem;
+    }
+
+    .step-num {
+      color: #ff006e;
+      font-weight: bold;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+
+    .micro-protocol {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px dashed #00f5ff55;
+      background: rgba(0, 0, 0, 0.35);
+      color: #ccd6f6;
+      line-height: 1.7;
+    }
+    .micro-protocol strong { color: #00f5ff; }
+
+    .loop-list {
+      list-style: none;
+      counter-reset: loop;
+      margin: 1rem 0 0;
+    }
+    .loop-list li {
+      counter-increment: loop;
+      position: relative;
+      padding: 0.75rem 0 0.75rem 2.5rem;
+      color: #ccd6f6;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .loop-list li:last-child { border-bottom: none; }
+    .loop-list li::before {
+      content: counter(loop);
+      position: absolute;
+      left: 0;
+      top: 0.75rem;
+      width: 1.6rem;
+      height: 1.6rem;
+      line-height: 1.6rem;
+      text-align: center;
+      border-radius: 50%;
+      background: rgba(255,0,110,0.12);
+      border: 1px solid #ff006e88;
+      color: #ff006e;
+      font-weight: bold;
+      font-size: 0.85rem;
+    }
+    .loop-list strong { color: #00f5ff; }
+
+    .reveal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      margin: 3rem 0;
+    }
+
+    .reveal-card {
+      background: rgba(22,33,62,0.92);
+      padding: 2rem;
+      border-radius: 8px;
+      border: 1px solid #ff006e33;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(2px);
+    }
+    .reveal-card:hover {
+      transform: translateY(-5px);
+      border-color: #ff006e;
+      box-shadow: 0 10px 30px rgba(255, 0, 110, 0.2);
+    }
+    .reveal-card h3 { color: #00f5ff; margin-bottom: 1rem; font-size: 1.2rem; }
+    .reveal-card .mechanism { color: #ccd6f6; line-height: 1.8; }
+    .reveal-card .mechanism strong { color: #00f5ff; }
+
+    .fn {
+      color: #00f5ff;
+      text-decoration: none;
+      font-size: 0.7em;
+      vertical-align: super;
+      padding: 0 1px;
+    }
+    .fn:hover { text-shadow: 0 0 8px rgba(0,245,255,0.6); }
+
+    .sources {
+      list-style: none;
+      margin-top: 1rem;
+    }
+    .sources li {
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      color: #8892b0;
+      font-size: 0.98rem;
+    }
+    .sources li:last-child { border-bottom: none; }
+    .sources .num { color: #ff006e; margin-right: 0.5rem; }
+    .sources a { color: #00f5ff; text-decoration: none; word-break: break-word; }
+    .sources a:hover { text-decoration: underline; }
+
+    footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      border-top: 1px solid #ff006e33;
+      color: #8892b0;
+    }
+
+    @media (max-width: 768px) {
+      .protocol-grid { grid-template-columns: 1fr; }
+      .reveal-grid { grid-template-columns: 1fr; }
+      .field-notes { padding: 2rem 1.5rem; }
+    }
+
+    /* Scroll reveal: CSS-driven, fails visible */
+    .sr {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .sr-ready .sr {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    .sr-ready .sr.sr-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg-layer" id="bgLayer"></div>
+  <div class="bg-overlay"></div>
+
+  <div class="hero">
+    <a class="back-link" href="index.html">← Errorfect — The Linguistic Autopsy</a>
+
+    <div class="glitch-container">
+      <div class="glitch">
+        <span class="masked-letter">R</span>eady <span style="color:#00f5ff;">eddy</span>
+      </div>
+    </div>
+
+    <div class="subtitle">
+      A word-level autopsy of <strong>"ready"</strong>: loop geometry, neuro-mechanics, protocol, and poetic exposition.
+      <br /><br />
+      A <span class="surgical">(r)eady eddy</span> is a self-reinforcing cognitive loop where the word "ready" is used as a <em>permission gate</em> that diverts goal-directed energy into circular self-soothing instead of downstream action.
+    </div>
+
+    <div class="scroll-indicator">↓</div>
+  </div>
+
+  <section>
+    <h2>The Core Object</h2>
+    <div class="field-notes sr">
+      <p>
+        In fluid dynamics, an <strong>eddy</strong> is a circular current that spins off the main flow and stays mostly in place.<a class="fn" href="#s1">[1]</a><a class="fn" href="#s2">[2]</a><a class="fn" href="#s3">[3]</a><a class="fn" href="#s4">[4]</a><a class="fn" href="#s5">[5]</a>
+      </p>
+      <p>
+        In behavior, a <span class="surgical">(r)eady eddy</span> is the mental equivalent: there is motion — rumination, planning, intention — but it recirculates around a local attractor (<em>"I'll do it when I feel ready"</em>) without producing state change.
+      </p>
+    </div>
+
+    <div class="reveal-grid">
+      <div class="reveal-card sr">
+        <h3>The Identity</h3>
+        <div class="mechanism">
+          <strong>Main current:</strong> "I want X — change, project, move."<br /><br />
+          <strong>Obstacle / rock:</strong> perceived risk, effort, exposure, uncertainty.<br /><br />
+          <strong>Eddy swirl:</strong> "I'll move when I feel ready."<br /><br />
+          <strong>Result:</strong> motion without translation; agency is anesthetized but not exercised.
+        </div>
+      </div>
+      <div class="reveal-card sr">
+        <h3>The Word</h3>
+        <div class="word-reveal">
+          <span class="masked-letter">R</span>eady
+        </div>
+        <div class="revealed-word">
+          <span class="arrow">→</span> eady = <strong>already</strong>
+        </div>
+        <div class="mechanism">
+          Strip the <strong>r</strong> and you expose what's being protected: <em>already-ness</em> — the system's demand that the path feel familiar before it is ever walked.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Linguistic Autopsy</h2>
+    <div class="field-notes sr">
+      <p>
+        Errorfect lens: <strong>"ready" is not just a descriptor; it's an operator.</strong><a class="fn" href="#s6">[6]</a><a class="fn" href="#s7">[7]</a>
+      </p>
+
+      <h3>Literal vs. functional meaning</h3>
+      <p>
+        <strong>Literal dictionary sense:</strong> "in a suitable state for an activity; fully prepared."
+      </p>
+      <p>
+        <strong>What it functions as in the avoidance script:</strong> a <span class="surgical">soft veto</span> ("I am not currently obligated to act") and a <span class="surgical">permission delay</span> ("I will act at some undefined point when internal conditions spontaneously align").
+      </p>
+      <p>
+        So "ready" masquerades as a neutral observation, but in practice it's a <strong>policy selector</strong> — binary (ready / not-ready) and asymmetric: <em>"not-ready" has no expiry.</em>
+      </p>
+
+      <h3>(r)eady decomposition</h3>
+      <p>
+        "Ready" is really "I want the neurological state of <em>I've already done this</em> in advance of doing it." That is exactly the limbic comfort constraint: the predictive brain wants no surprise, no error, no exposure before acting — but novelty and growth require moving <em>while prediction is still rough</em>.
+      </p>
+    </div>
+
+    <div class="key-insight sr">
+      "Ready" = a semantically neutral word.<br />
+      "(r)eady" = the Errorfect mark for "this word is operating as an eddy-generator."
+    </div>
+  </section>
+
+  <section>
+    <h2>Neuro-Mechanics</h2>
+    <div class="field-notes sr">
+      <p>The loop, structured in system terms — first the trap, then the antidote.</p>
+
+      <div class="protocol-grid">
+        <div class="protocol-step sr">
+          <h3>The default (r)eady eddy loop</h3>
+          <p><span class="step-num">Goal activation</span> Cortical / PFC: "I want to do X."</p>
+          <p><span class="step-num">Threat prediction</span> The limbic system predicts discomfort, embarrassment, failure, energy cost.</p>
+          <p><span class="step-num">Script invocation</span> The language system outputs "I'll do it when I feel ready." The phrase functions as policy: <em>defer</em>.</p>
+          <p><span class="step-num">Immediate relief</span> Threat drops because action was postponed — relief signal plus a minor dopamine hit for "avoided risk."</p>
+          <p><span class="step-num">Reinforcement</span> The brain tags "wait until ready" as effective at reducing discomfort; next time it deploys faster.</p>
+          <p><span class="step-num">No environmental update</span> No action → no evidence → the fear model stays uncorrected. "Not ready" persists or grows.</p>
+          <p class="small">A closed eddy: the energy from the intent fuels the loop that keeps the system in place.</p>
+        </div>
+
+        <div class="protocol-step sr">
+          <h3>The action-centric loop (antidote)</h3>
+          <p><span class="step-num">Micro-action selection</span> Prefrontal cortex chooses a trivial but real step — open the doc, send one line, a 5-minute sprint.</p>
+          <p><span class="step-num">Execution under "not ready"</span> You act despite limbic protest; the threshold is low enough to cross with residual will.</p>
+          <p><span class="step-num">Evidence generation</span> The system observes: "Action happened, nothing catastrophic occurred — sometimes it even felt meaningful."</p>
+          <p><span class="step-num">Prediction update</span> Dopamine fires around successful prediction updates and small wins, not just big rewards.<a class="fn" href="#s6">[6]</a> The brain updates: "this territory is survivable."</p>
+          <p><span class="step-num">Motivational re-weighting</span> "I can do a small piece" becomes more accessible; "I'll wait until I'm ready" gets weaker.</p>
+          <p class="small">The loop becomes: action → evidence → dopamine → more action. You reassign dopamine from avoidance relief to execution.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>The Pattern Card</h2>
+    <div class="field-notes sr">
+      <p>
+        <span class="tag">Cognitive eddy</span>
+        <span class="tag">Linguistic stall-script</span>
+      </p>
+      <h3>Name: (r)eady eddy</h3>
+      <p>
+        <strong>Signature phrase:</strong> "I'll do it when I feel ready."<br />
+        <strong>Variants:</strong> "I'm not ready yet," "Once I'm ready, I'll…", "I need to feel more ready first."
+      </p>
+      <p>
+        <strong>Mechanism:</strong> uses the word "ready" to delegate agency to a subjective, unmeasured internal state, and to preserve homeostasis by postponing exposure to novelty or risk. It produces an eddy — intention loops in place; there is internal motion (planning, talking) but no state change.
+      </p>
+      <p>
+        <strong>Neural substrate (high-level):</strong> the limbic system biases toward familiarity = safety, even when the familiar is destructive; the prefrontal cortex is underused, with planning simulated but never coupled to behavior.
+      </p>
+      <p>
+        <strong>Behavioral markers:</strong> long-standing goals with high narrative salience and low behavioral trace; frequent meta-talk about "needing to get ready" with minimal micro-steps taken; relief when deciding to "wait until ready," followed by subtle shame or frustration later.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Intervention Protocol</h2>
+    <div class="field-notes sr">
+      <p>An Errorfect-style four-step move for catching and breaking the loop in real time.</p>
+
+      <div class="protocol-grid">
+        <div class="protocol-step sr">
+          <h3>1 — Catch</h3>
+          <p>Trigger: any thought or utterance using "ready" as a precondition for action.</p>
+          <p>Ask: <strong>"Is 'ready' a descriptor or a permission switch?"</strong></p>
+          <p class="small">"The oven is ready" = descriptor, fine. "I'll start when I'm ready" = permission switch, suspect.</p>
+        </div>
+
+        <div class="protocol-step sr">
+          <h3>2 — Expose</h3>
+          <p>Rewrite once as: "I'll do it when I feel <strong>(r)eady</strong>." Then translate: "I'll do it when I feel <em>already</em> safe and familiar with it."</p>
+          <p>Label it: <strong>"This is an eddy — my intention is swirling around a rock."</strong></p>
+          <p class="small">Map it: main flow = "I want X"; rock = risk / uncertainty; eddy = "waiting for the feeling of already having done it."</p>
+        </div>
+
+        <div class="protocol-step sr">
+          <h3>3 — Replace the gate with a spec</h3>
+          <p>Define a concrete trigger that doesn't depend on feelings:</p>
+          <p class="small"><strong>Time-based:</strong> "At 10:05 I do 5 minutes of X."<br /><strong>State-based:</strong> "After coffee, I open file Y."<br /><strong>Condition-based:</strong> "Once I have A and B, I take step C."</p>
+          <div class="micro-protocol">
+            <strong>The recompiled script:</strong> "I act to create the feeling, not after I get the feeling."
+          </div>
+        </div>
+
+        <div class="protocol-step sr">
+          <h3>4 — Micro-action + evidence</h3>
+          <p>Design the smallest meaningful action you can do in under 2–5 minutes that moves the system one step downstream. Execute it <em>under "not ready."</em></p>
+          <p>Immediately log 1–2 lines of evidence: "I took action while not feeling ready. Outcome: still alive; state: slightly more competent, less mystical."</p>
+          <p class="small">Closes the new loop: action → evidence → dopamine → readiness generated post hoc. A few cycles and the eddy weakens.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>(r)eady / the eddy</h2>
+    <div class="field-notes sr">
+      <p>
+        "Ready" sounds like a neutral weather report: <em>"I'll do it when I feel ready."</em> But "ready" is not a forecast; it's a switch. Every time you say it, you hand your schedule to a subjective neurological state that never bothers to tell you when it's arriving. "Ready" becomes a polite synonym for <span class="surgical">"not now, undefined later."</span>
+      </p>
+      <p>
+        Run it through the Errorfect lens and peel off the <strong>r</strong>, and you get what it's really asking for: <strong>eady = already</strong>. Your nervous system wants the feeling of <em>already</em> safe, <em>already</em> competent, <em>already</em> familiar before you move. It demands a history where you haven't written one yet.
+      </p>
+      <p>
+        That demand gets routed through the limbic system — the brain's survival clerk. Its job is homeostasis: keep things the same. To it, familiar = safe, even when the familiar is suffocating you. So "I'll do it when I feel ready" really means: "I'll do it when my survival clerk promises me there will be no discomfort, no uncertainty, no exposure." <span class="surgical">Translation: never.</span>
+      </p>
+      <p>
+        In a river, an eddy is a pocket of circular current hiding behind a rock. The main flow surges downstream, but the water in the eddy spins and spins in place. There is motion, but no travel.<a class="fn" href="#s2">[2]</a><a class="fn" href="#s3">[3]</a><a class="fn" href="#s4">[4]</a><a class="fn" href="#s1">[1]</a> The sentence "I'll do it when I feel ready" is a linguistic rock. Your intention hits it and spins off into a local loop:
+      </p>
+      <ul class="loop-list">
+        <li>You think about doing it.</li>
+        <li>You fantasize about the future where you did it.</li>
+        <li>You re-explain to yourself why you're not quite ready yet.</li>
+        <li>You feel a small relief every time you postpone.</li>
+      </ul>
+      <p style="margin-top:1.5rem;">
+        That relief is the eddy's fuel. The nervous system gets a tiny reward for not moving, so the loop stabilizes. You call it "procrastination." In physics, we'd call it a <span class="surgical">standing wave of avoidance</span>.
+      </p>
+    </div>
+
+    <div class="key-insight sr">
+      You do not act because you feel ready.<br />
+      You feel ready because you have acted.
+    </div>
+
+    <div class="field-notes sr">
+      <p>
+        Action is how your brain earns the feeling it keeps trying to demand in advance. Every time you execute a small move while still "not ready," you generate evidence: <em>"I took a step and nothing exploded."</em> That evidence rewrites predictions. Dopamine shows up not as a trophy at the finish line, but as fuel in the middle of the run — the system tagging this territory as survivable and maybe even interesting.<a class="fn" href="#s6">[6]</a>
+      </p>
+      <p>
+        That is how you break a (r)eady eddy. You stop waiting for the water to feel like it's already downstream. You step in. You let movement manufacture the safety your language was hoarding as a prerequisite.
+      </p>
+    </div>
+  </section>
+
+  <section id="sources">
+    <h2>Sources</h2>
+    <div class="field-notes sr">
+      <ol class="sources">
+        <li id="s1"><span class="num">[1]</span> EDDY — Definition &amp; Meaning. <a href="https://www.merriam-webster.com/dictionary/eddy" target="_blank" rel="noopener">Merriam-Webster</a></li>
+        <li id="s2"><span class="num">[2]</span> Eddy — Definition, Meaning &amp; Synonyms. <a href="https://www.vocabulary.com/dictionary/eddy" target="_blank" rel="noopener">Vocabulary.com</a></li>
+        <li id="s3"><span class="num">[3]</span> What is an eddy? <a href="https://oceanservice.noaa.gov/facts/eddy.html" target="_blank" rel="noopener">NOAA Ocean Service</a></li>
+        <li id="s4"><span class="num">[4]</span> EDDY — definition in the Cambridge English Dictionary. <a href="https://dictionary.cambridge.org/us/dictionary/english/eddy" target="_blank" rel="noopener">Cambridge Dictionary</a></li>
+        <li id="s5"><span class="num">[5]</span> eddy. <a href="https://en.wiktionary.org/wiki/eddy" target="_blank" rel="noopener">Wiktionary</a></li>
+        <li id="s6"><span class="num">[6]</span> Errorfect — The Linguistic Autopsy. <a href="https://errorfect.com" target="_blank" rel="noopener">errorfect.com</a></li>
+        <li id="s7"><span class="num">[7]</span> ThinkWell Labs — Upstream Architectures. <a href="https://twl.today" target="_blank" rel="noopener">twl.today</a></li>
+      </ol>
+    </div>
+  </section>
+
+  <footer>
+    <p>Errorfect Developed by Briar Greenway &amp; ThinkWell Labs © 2026 | A linguistic autopsy</p>
+    <p style="margin-top: 1rem; font-size: 0.9rem;">Disruption reveals attachment; attachment reveals mechanism.</p>
+    <p style="margin-top: 1.5rem;"><a href="index.html" style="color:#00f5ff;text-decoration:none;">← Back to the Linguistic Autopsy</a></p>
+  </footer>
+
+  <script>
+    // Randomized Errorfect logo background
+    (function setRandomBackground() {
+      const backgrounds = [
+        "FAFDF64A-78C7-43CF-9C14-6D71D5466B60.png",
+        "12E9D59D-4ECC-4634-9538-5DEDBB231E70.png",
+        "2C085A63-6E1D-4681-8980-BE6E655BCA72.png",
+        "4BBC46C5-FFD6-4E6C-B16E-789F6FF285EF.png",
+        "657AF014-74E0-491A-9E68-36A7601AF066.png",
+        "820F6A31-9A5C-4710-A6BD-1FDF95DCF802.png",
+        "9F69218D-CA43-4CE4-B3A0-D1F06DBC43D1.png"
+      ];
+      const pick = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+      const layer = document.getElementById("bgLayer");
+      if (!layer) return;
+      const img = new Image();
+      img.onload = () => { layer.style.backgroundImage = `url("${pick}")`; };
+      img.onerror = () => { layer.style.backgroundImage = "none"; };
+      img.src = pick;
+    })();
+
+    // Subtle glitch effect on scroll
+    window.addEventListener('scroll', () => {
+      const scrolled = window.pageYOffset;
+      const glitch = document.querySelector('.glitch');
+      if (!glitch) return;
+      if (scrolled > 100) {
+        glitch.style.textShadow = `${Math.random() * 5}px ${Math.random() * 5}px 20px rgba(255, 0, 110, 0.5)`;
+      }
+    });
+
+    // Scroll reveal: fails VISIBLE if observer never fires
+    (function initScrollReveal() {
+      if (!('IntersectionObserver' in window)) return;
+
+      var targets = document.querySelectorAll('.sr');
+      if (!targets.length) return;
+
+      document.documentElement.classList.add('sr-ready');
+
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('sr-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+      targets.forEach(function(el) { observer.observe(el); });
+
+      setTimeout(function() {
+        targets.forEach(function(el) {
+          if (!el.classList.contains('sr-visible')) {
+            el.classList.add('sr-visible');
+          }
+        });
+      }, 3000);
+    })();
+  </script>
+
+  <!-- ThinkWell Labs Network Footer -->
+  <footer style="margin-top:48px;padding:18px 0;border-top:1px solid rgba(255,255,255,.07);font-size:12px;color:rgba(255,255,255,.45);text-align:center;line-height:1.8">
+    <span style="font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:10px;color:rgba(255,255,255,.35);display:block;margin-bottom:6px">A ThinkWell Labs offering</span>
+    <a href="https://twl.today" style="color:rgba(255,255,255,.6);text-decoration:none">TWL</a>
+    <span style="margin:0 6px;opacity:.3">·</span>
+    <a href="https://arttra.art" style="color:rgba(255,255,255,.6);text-decoration:none">arttra</a>
+    <span style="margin:0 6px;opacity:.3">·</span>
+    <a href="https://cookiebouncer.app" style="color:rgba(255,255,255,.6);text-decoration:none">CookieBouncer</a>
+    <span style="margin:0 6px;opacity:.3">·</span>
+    <a href="https://errorfect.com" style="color:rgba(255,255,255,.8);font-weight:600;text-decoration:none">Errorfect</a>
+    <span style="margin:0 6px;opacity:.3">·</span>
+    <a href="https://acepaste.xyz" style="color:rgba(255,255,255,.6);text-decoration:none">Acepaste</a>
+  </footer>
+</body>
+</html>

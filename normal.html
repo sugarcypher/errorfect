@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Errorfect — Normal / Ormal</title>
+  <meta name="description" content="A word-level autopsy of 'normal': how a verdict disguises itself as a description, manufactures an invisible center from the Latin 'norma' (a carpenter's square), and presses everyone against a ruler nobody can name — and how to break it." />
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* Background system: randomized Errorfect logo each load + legibility overlay */
+    .bg-layer{
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      filter: saturate(1.05) contrast(1.05);
+      transform: scale(1.02);
+    }
+
+    .bg-overlay{
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(0,245,255,0.10), rgba(0,0,0,0) 45%),
+        radial-gradient(circle at 70% 60%, rgba(255,0,110,0.10), rgba(0,0,0,0) 50%),
+        linear-gradient(180deg, rgba(0,0,0,0.68), rgba(0,0,0,0.86));
+      pointer-events: none;
+    }
+
+    body {
+      font-family: "Courier New", monospace;
+      background: transparent;
+      color: #e0e0e0;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Keep all content above overlay */
+    .hero, section, footer { position: relative; z-index: 2; }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      background: radial-gradient(circle at center, rgba(26,26,46,0.72) 0%, rgba(10,10,10,0.62) 100%);
+    }
+
+    .glitch-container {
+      position: relative;
+      font-size: clamp(3rem, 10vw, 8rem);
+      font-weight: bold;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .glitch {
+      position: relative;
+      color: #ff006e;
+      text-shadow: 0 0 20px rgba(255, 0, 110, 0.5);
+    }
+
+    .masked-letter {
+      color: #ff006e;
+      text-decoration: line-through;
+      opacity: 0.5;
+    }
+
+    .subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      color: #8892b0;
+      text-align: center;
+      margin-bottom: 3rem;
+      max-width: 980px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 2rem;
+      color: #00f5ff;
+      text-decoration: none;
+      font-size: 0.95rem;
+      letter-spacing: 0.04em;
+      border: 1px solid #00f5ff55;
+      padding: 0.4rem 0.9rem;
+      border-radius: 999px;
+      background: rgba(0, 245, 255, 0.06);
+      transition: all 0.3s ease;
+    }
+    .back-link:hover { border-color: #00f5ff; box-shadow: 0 0 18px rgba(0,245,255,0.25); }
+
+    .scroll-indicator {
+      font-size: 2rem;
+      animation: bounce 2s infinite;
+      color: #00f5ff;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(10px); }
+    }
+
+    section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      color: #ff006e;
+      margin-bottom: 2rem;
+      position: relative;
+      display: inline-block;
+    }
+
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, #ff006e, #00f5ff);
+    }
+
+    .field-notes {
+      background: linear-gradient(135deg, rgba(22,33,62,0.92) 0%, rgba(15,52,96,0.92) 100%);
+      padding: 3rem;
+      border-radius: 8px;
+      border-left: 4px solid #ff006e;
+      margin: 3rem 0;
+      backdrop-filter: blur(2px);
+    }
+
+    .field-notes p {
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+      color: #ccd6f6;
+    }
+    .field-notes p:last-child { margin-bottom: 0; }
+
+    .field-notes h3 {
+      color: #00f5ff;
+      margin: 0.5rem 0 1rem;
+      font-size: 1.25rem;
+      letter-spacing: 0.02em;
+    }
+
+    .key-insight {
+      background: rgba(10,10,10,0.85);
+      padding: 2rem;
+      border-radius: 8px;
+      border: 2px solid #00f5ff;
+      margin: 2rem 0;
+      font-size: 1.2rem;
+      color: #00f5ff;
+      text-align: center;
+      font-weight: bold;
+      backdrop-filter: blur(2px);
+    }
+
+    .surgical {
+      color: #ff006e;
+      font-style: italic;
+    }
+
+    .word-reveal {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+
+    .revealed-word {
+      color: #00f5ff;
+      display: block;
+      font-size: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .arrow {
+      display: inline-block;
+      color: #ff006e;
+      margin: 0 1rem;
+      font-size: 1.5rem;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.85rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid #00f5ff55;
+      color: #00f5ff;
+      margin: 0.2rem 0.35rem 0 0;
+      background: rgba(0, 245, 255, 0.06);
+      white-space: nowrap;
+    }
+
+    .protocol-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0 1rem;
+    }
+
+    .protocol-step {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid #00f5ff33;
+      border-radius: 10px;
+      padding: 1.25rem 1.25rem 1.1rem;
+      backdrop-filter: blur(2px);
+    }
+
+    .protocol-step h3 {
+      color: #00f5ff;
+      margin-bottom: 0.65rem;
+      font-size: 1.1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .protocol-step p {
+      color: #ccd6f6;
+      margin-bottom: 0.75rem;
+      line-height: 1.65;
+      font-size: 1rem;
+    }
+    .protocol-step p:last-child { margin-bottom: 0; }
+
+    .protocol-step .small {
+      color: #8892b0;
+      font-size: 0.95rem;
+    }
+
+    .step-num {
+      color: #ff006e;
+      font-weight: bold;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+
+    .micro-protocol {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px dashed #00f5ff55;
+      background: rgba(0, 0, 0, 0.35);
+      color: #ccd6f6;
+      line-height: 1.7;
+    }
+    .micro-protocol strong { color: #00f5ff; }
+
+    .loop-list {
+      list-style: none;
+      counter-reset: loop;
+      margin: 1rem 0 0;
+    }
+    .loop-list li {
+      counter-increment: loop;
+      position: relative;
+      padding: 0.75rem 0 0.75rem 2.5rem;
+      color: #ccd6f6;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .loop-list li:last-child { border-bottom: none; }
+    .loop-list li::before {
+      content: counter(loop);
+      position: absolute;
+      left: 0;
+      top: 0.75rem;
+      width: 1.6rem;
+      height: 1.6rem;
+      line-height: 1.6rem;
+      text-align: center;
+      border-radius: 50%;
+      background: rgba(255,0,110,0.12);
+      border: 1px solid #ff006e88;
+      color: #ff006e;
+      font-weight: bold;
+      font-size: 0.85rem;
+    }
+    .loop-list strong { color: #00f5ff; }
+
+    .reveal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      margin: 3rem 0;
+    }
+
+    .reveal-card {
+      background: rgba(22,33,62,0.92);
+      padding: 2rem;
+      border-radius: 8px;
+      border: 1px solid #ff006e33;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(2px);
+    }
+    .reveal-card:hover {
+      transform: translateY(-5px);
+      border-color: #ff006e;
+      box-shadow: 0 10px 30px rgba(255, 0, 110, 0.2);
+    }
+    .reveal-card h3 { color: #00f5ff; margin-bottom: 1rem; font-size: 1.2rem; }
+    .reveal-card .mechanism { color: #ccd6f6; line-height: 1.8; }
+    .reveal-card .mechanism strong { color: #00f5ff; }
+
+    .fn {
+      color: #00f5ff;
+      text-decoration: none;
+      font-size: 0.7em;
+      vertical-align: super;
+      padding: 0 1px;
+    }
+    .fn:hover { text-shadow: 0 0 8px rgba(0,245,255,0.6); }
+
+    .sources {
+      list-style: none;
+      margin-top: 1rem;
+    }
+    .sources li {
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      color: #8892b0;
+      font-size: 0.98rem;
+    }
+    .sources li:last-child { border-bottom: none; }
+    .sources .num { color: #ff006e; margin-right: 0.5rem; }
+    .sources a { color: #00f5ff; text-decoration: none; word-break: break-word; }
+    .sources a:hover { text-decoration: underline; }
+
+    footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      border-top: 1px solid #ff006e33;
+      color: #8892b0;
+    }
+
+    @media (max-width: 768px) {
+      .protocol-grid { grid-template-columns: 1fr; }
+      .reveal-grid { grid-template-columns: 1fr; }
+      .field-notes { padding: 2rem 1.5rem; }
+    }
+
+    /* Scroll reveal: CSS-driven, fails visible */
+    .sr {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .sr-ready .sr {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    .sr-ready .sr.sr-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg-layer" id="bgLayer"></div>
+  <div class="bg-overlay"></div>
+
+  <div class="hero">
+    <a class="back-link" href="index.html">← Errorfect — The Linguistic Autopsy</a>
+
+    <div class="glitch-container">
+      <div class="glitch">
+        <span class="masked-letter">N</span>ormal <span style="color:#00f5ff;">ormal</span>
+      </div>
+    </div>
+
+    <div class="subtitle">
+      A word-level autopsy of <strong>"normal"</strong>: the identity, the linguistic mechanism, neuro-mechanics, protocol, and poetic exposition.
+      <br /><br />
+      <span class="surgical">"Normal"</span> is a verdict masquerading as a description — strip the N and "ormal" is mostly noise, so escalate to the root: Latin <em>norma</em>, a carpenter's square. "Normal" literally means <em>conforming to the ruler someone else is holding.</em>
+    </div>
+
+    <div class="scroll-indicator">↓</div>
+  </div>
+
+  <section>
+    <h2>The Core Object</h2>
+    <div class="field-notes sr">
+      <p>
+        "Normal" arrives dressed as a measurement — a calm, neutral reading of how things are.<a class="fn" href="#s1">[1]</a><a class="fn" href="#s3">[3]</a> But it never tells you the instrument, the sample, or the hand on the dial.
+      </p>
+      <p>
+        The Errorfect object here is the <span class="surgical">normal verdict</span>: a single word that installs an invisible center, ranks you against it, and then calls the ranking a fact. Mostly you can't see the ruler — only the score.
+      </p>
+    </div>
+
+    <div class="reveal-grid">
+      <div class="reveal-card sr">
+        <h3>The Identity</h3>
+        <div class="mechanism">
+          <strong>Surface claim:</strong> "I'm just describing how things usually are."<br /><br />
+          <strong>Actual function:</strong> a verdict — <em>this counts as acceptable; that does not.</em><br /><br />
+          <strong>Hidden move:</strong> a center is assumed but never named, so the comparison feels like nature instead of a choice.<br /><br />
+          <strong>Result:</strong> "normal" is a <span class="surgical">verdict masquerading as a description</span> — it sorts while pretending to observe.
+        </div>
+      </div>
+      <div class="reveal-card sr">
+        <h3>The Word</h3>
+        <div class="word-reveal">
+          <span class="masked-letter">N</span>ormal
+        </div>
+        <div class="revealed-word">
+          <span class="arrow">→</span> ormal = <strong>noise</strong>
+        </div>
+        <div class="mechanism">
+          Strip the <strong>N</strong> and "ormal" is mostly static — no payload there. So escalate to the root: Latin <strong>norma</strong><a class="fn" href="#s2">[2]</a> = a <em>carpenter's square</em>, a measuring rule. "Normal" literally means <span class="surgical">conforming to the ruler someone else is holding</span> — the word was a tool before it was a judgment.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Linguistic Autopsy</h2>
+    <div class="field-notes sr">
+      <p>
+        Errorfect lens: <strong>"normal" is not a measurement; it's a sorting rule.</strong><a class="fn" href="#s4">[4]</a><a class="fn" href="#s5">[5]</a>
+      </p>
+
+      <h3>Literal vs. functional meaning</h3>
+      <p>
+        <strong>Literal dictionary sense:</strong> "conforming to a type, standard, or regular pattern; usual, typical, expected."<a class="fn" href="#s1">[1]</a><a class="fn" href="#s3">[3]</a>
+      </p>
+      <p>
+        <strong>What it functions as in the social script:</strong> a <span class="surgical">gate</span> ("you are inside the acceptable set") and an <span class="surgical">indictment</span> ("you are outside it, therefore defective"). It pretends to be a measurement term while doing the work of a verdict.
+      </p>
+      <p>
+        So "normal" masquerades as a reading off an instrument, but in practice it <strong>manufactures an invisible center</strong> and treats anything outside that center as broken — without ever disclosing the units, the population, or the authority that set the dial.
+      </p>
+
+      <h3>norma decomposition</h3>
+      <p>
+        The root <em>norma</em><a class="fn" href="#s2">[2]</a> is a physical object: the square a carpenter presses against the wood to check the angle. "Normal" is therefore the past tense of being <em>measured against a tool</em> — and the unspoken question is always who picked up the square, and why their angle counts as true.
+      </p>
+    </div>
+
+    <div class="key-insight sr">
+      Ask: normal <em>for whom</em>, in what context, by what metric?<br />
+      If the units can't be named, "normal" isn't a measurement — it's a verdict in disguise.
+    </div>
+  </section>
+
+  <section>
+    <h2>Neuro-Mechanics</h2>
+    <div class="field-notes sr">
+      <p>The loop, structured in system terms — first the trap, then the antidote.</p>
+
+      <div class="protocol-grid">
+        <div class="protocol-step sr">
+          <h3>The default normal-verdict loop (trap)</h3>
+          <p><span class="step-num">Center install</span> The word "normal" plants an <em>unnamed center</em> — a standard you never agreed to and can't see.</p>
+          <p><span class="step-num">Self-ranking</span> You automatically measure yourself against the phantom center: "Am I inside? Am I too far out?"</p>
+          <p><span class="step-num">Social pressure</span> Distance from the center reads as defect, so shame and conformity pressure spike.</p>
+          <p><span class="step-num">You shrink to fit</span> You trim your range — hide, edit, perform — to close the gap with a ruler nobody will even show you.</p>
+          <p class="small">A closed loop: the word supplies the standard, you supply the obedience, and the authoring hand stays invisible.</p>
+        </div>
+
+        <div class="protocol-step sr">
+          <h3>The demand-the-units loop (antidote)</h3>
+          <p><span class="step-num">Demand the units</span> You answer "normal" with a question: <em>"By what metric, measured against whom?"</em></p>
+          <p><span class="step-num">No one can name them</span> The center turns out to be undefined — there is no instrument, just a preference wearing a lab coat.</p>
+          <p><span class="step-num">The verdict loses authority</span> Once exposed as unsourced, "normal" stops reading as a fact and starts reading as someone's opinion.</p>
+          <p><span class="step-num">You reclaim the range</span> With no valid ruler pressing on you, the full spread of human variation becomes available again.</p>
+          <p class="small">The loop becomes: question → no units → authority collapses → range restored. You reassign the burden of proof to the word.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>The Pattern Card</h2>
+    <div class="field-notes sr">
+      <p>
+        <span class="tag">Verdict-as-description</span>
+        <span class="tag">Invisible center</span>
+        <span class="tag">Social-control script</span>
+      </p>
+      <h3>Name: the normal verdict</h3>
+      <p>
+        <strong>Signature phrases:</strong> "Be normal." / "That's not normal." / "Is this normal?"<br />
+        <strong>Variants:</strong> "Act normal," "perfectly normal," "totally normal," "what normal people do," "back to normal."
+      </p>
+      <p>
+        <strong>Mechanism:</strong> uses the word "normal" to install an unnamed center, rank a person or behavior against it, and present the ranking as an objective description. It manufactures a center and treats everything outside it as defective — without ever disclosing whose ruler is being used.
+      </p>
+      <p>
+        <strong>Neural / social substrate (high-level):</strong> belonging circuitry treats deviation-from-group as threat, so the word borrows the force of social survival; the verdict feels like physics because exclusion once cost lives.
+      </p>
+      <p>
+        <strong>Behavioral markers:</strong> self-editing to match an unstated standard; relief when told you're "normal" and shame when told you're "not"; the word deployed to end a conversation rather than open one; an inability — when pressed — to name the metric, sample, or authority behind it.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Intervention Protocol</h2>
+    <div class="field-notes sr">
+      <p>An Errorfect-style four-step move for catching and breaking the verdict in real time.</p>
+
+      <div class="protocol-grid">
+        <div class="protocol-step sr">
+          <h3>1 — Catch</h3>
+          <p>Trigger: any use of "normal" aimed at a person, body, feeling, or choice.</p>
+          <p>Ask: <strong>"Is 'normal' a description here, or a verdict / sorting rule?"</strong></p>
+          <p class="small">"Normal body temperature is ~37°C" = description with units, fine. "Why can't you just be normal?" = verdict, suspect.</p>
+        </div>
+
+        <div class="protocol-step sr">
+          <h3>2 — Expose</h3>
+          <p>Strip it: <strong>Normal → ormal</strong>. The remainder is noise — so escalate to the root.</p>
+          <p>Surface the source: <strong>norma = the carpenter's square</strong><a class="fn" href="#s2">[2]</a> being pressed against you. Name it: <strong>"This is a ruler, not a reading."</strong></p>
+          <p class="small">Map it: claimed center = "what's normal"; actual object = someone's square; the angle they call true is a choice, not a constant.</p>
+        </div>
+
+        <div class="protocol-step sr">
+          <h3>3 — Replace the gate with a spec</h3>
+          <p>Demand the units that a real measurement would have:</p>
+          <p class="small"><strong>For whom:</strong> "Normal for which population?"<br /><strong>In what context:</strong> "Under what conditions?"<br /><strong>By what metric:</strong> "Measured how, against what scale?"</p>
+          <div class="micro-protocol">
+            <strong>The recompiled axiom:</strong> "If nobody can name the units, 'normal' is doing control work, not truth work."
+          </div>
+        </div>
+
+        <div class="protocol-step sr">
+          <h3>4 — Micro-action + evidence</h3>
+          <p>Take the smallest real step: either <em>name the metric explicitly</em> ("typical for adults at rest, per this scale") or <em>drop the word entirely</em> and act from your own range.</p>
+          <p>Immediately log 1–2 lines of evidence: "I asked for the units; none existed. I acted anyway. Outcome: still here; the ruler had no authority I hadn't loaned it."</p>
+          <p class="small">Closes the new loop: question → no units → discard → act from your own range. A few cycles and the verdict stops landing.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>normal / the invisible ruler</h2>
+    <div class="field-notes sr">
+      <p>
+        "Normal" sounds like a weather report: a calm, neutral reading of the conditions. <em>"That's not normal." "Is this normal?" "Just be normal."</em> But it isn't a forecast — it's a verdict wearing the costume of an observation. Every time the word lands, a judgment gets smuggled in as a fact, and you never get to inspect the instrument.<a class="fn" href="#s1">[1]</a>
+      </p>
+      <p>
+        Run it through the Errorfect lens. Strip the <strong>N</strong> and you're left with <strong>ormal</strong> — noise, no payload. So go deeper, to the root: Latin <strong>norma</strong><a class="fn" href="#s2">[2]</a>, a carpenter's square. The word was a <em>tool</em> before it was a sentence. To be "normal" is to have been measured against someone's square and found to match their angle. The reading was never about you; it was about their ruler.
+      </p>
+      <p>
+        The cost lands quietly. The word manufactures an invisible center, and then asks you to orbit it. You self-rank. You feel the distance as defect. Shame does the rest — you conform, you edit, you erase the parts of your range that stick out past the line. <span class="surgical">Conformity, shame, self-erasure</span>, all financed by a ruler nobody will show you.
+      </p>
+      <p>
+        In a workshop, the square is honest: you can see it, you can check it against another. But the social "normal" hides the square behind the verb. The sentence "that's not normal" is a linguistic square pressed against your edge, and your attention spins off into the wrong question:
+      </p>
+      <ul class="loop-list">
+        <li>You ask whether you're inside the line.</li>
+        <li>You imagine the version of you that would fit.</li>
+        <li>You re-explain to yourself why you don't.</li>
+        <li>You shrink to close a gap you never measured.</li>
+      </ul>
+      <p style="margin-top:1.5rem;">
+        That shrinking is the loop's fuel. The relief of fitting in rewards the obedience, so the verdict stabilizes. You call it "fitting in." In Errorfect terms, it's a <span class="surgical">standing wave of self-erasure</span> — and the moment the mask drops, you stop seeing a measurement and start seeing a ruler, with a hand on it.
+      </p>
+    </div>
+
+    <div class="key-insight sr">
+      "Normal" is not a measurement of you.<br />
+      It is the angle of a square someone else chose to hold.
+    </div>
+
+    <div class="field-notes sr">
+      <p>
+        So you reclaim the question. Not "am I normal?" but <span class="surgical">"by what metric, and who authored it?"</span> The instant you demand the units, the verdict has to show its work — and a verdict with no units is not truth work, it's control work. Most of the time, there is no instrument to produce. There is only a preference that learned to speak in the grammar of fact.
+      </p>
+      <p>
+        That is how you break the normal verdict. You stop accepting "normal" as a reading off an invisible dial. You ask whose square it is. And when no one can answer, you set the ruler down and act from your own range — the full spread the word was quietly trying to clip.
+      </p>
+    </div>
+  </section>
+
+  <section id="sources">
+    <h2>Sources</h2>
+    <div class="field-notes sr">
+      <ol class="sources">
+        <li id="s1"><span class="num">[1]</span> NORMAL — Definition &amp; Meaning. <a href="https://www.merriam-webster.com/dictionary/normal" target="_blank" rel="noopener">Merriam-Webster</a></li>
+        <li id="s2"><span class="num">[2]</span> normal | etymology (from Latin "norma" = carpenter's square, rule, pattern). <a href="https://www.etymonline.com/word/normal" target="_blank" rel="noopener">Online Etymology Dictionary</a></li>
+        <li id="s3"><span class="num">[3]</span> NORMAL — English meaning. <a href="https://dictionary.cambridge.org/us/dictionary/english/normal" target="_blank" rel="noopener">Cambridge English Dictionary</a></li>
+        <li id="s4"><span class="num">[4]</span> Errorfect — The Linguistic Autopsy. <a href="https://errorfect.com" target="_blank" rel="noopener">errorfect.com</a></li>
+        <li id="s5"><span class="num">[5]</span> ThinkWell Labs — Upstream Architectures. <a href="https://twl.today" target="_blank" rel="noopener">twl.today</a></li>
+      </ol>
+    </div>
+  </section>
+
+  <footer>
+    <p>Errorfect Developed by Briar Greenway &amp; ThinkWell Labs © 2026 | A linguistic autopsy</p>
+    <p style="margin-top: 1rem; font-size: 0.9rem;">Disruption reveals attachment; attachment reveals mechanism.</p>
+    <p style="margin-top: 1.5rem;"><a href="index.html" style="color:#00f5ff;text-decoration:none;">← Back to the Linguistic Autopsy</a></p>
+  </footer>
+
+  <script>
+    // Randomized Errorfect logo background
+    (function setRandomBackground() {
+      const backgrounds = [
+        "FAFDF64A-78C7-43CF-9C14-6D71D5466B60.png",
+        "12E9D59D-4ECC-4634-9538-5DEDBB231E70.png",
+        "2C085A63-6E1D-4681-8980-BE6E655BCA72.png",
+        "4BBC46C5-FFD6-4E6C-B16E-789F6FF285EF.png",
+        "657AF014-74E0-491A-9E68-36A7601AF066.png",
+        "820F6A31-9A5C-4710-A6BD-1FDF95DCF802.png",
+        "9F69218D-CA43-4CE4-B3A0-D1F06DBC43D1.png"
+      ];
+      const pick = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+      const layer = document.getElementById("bgLayer");
+      if (!layer) return;
+      const img = new Image();
+      img.onload = () => { layer.style.backgroundImage = `url("${pick}")`; };
+      img.onerror = () => { layer.style.backgroundImage = "none"; };
+      img.src = pick;
+    })();
+
+    // Subtle glitch effect on scroll
+    window.addEventListener('scroll', () => {
+      const scrolled = window.pageYOffset;
+      const glitch = document.querySelector('.glitch');
+      if (!glitch) return;
+      if (scrolled > 100) {
+        glitch.style.textShadow = `${Math.random() * 5}px ${Math.random() * 5}px 20px rgba(255, 0, 110, 0.5)`;
+      }
+    });
+
+    // Scroll reveal: fails VISIBLE if observer never fires
+    (function initScrollReveal() {
+      if (!('IntersectionObserver' in window)) return;
+
+      var targets = document.querySelectorAll('.sr');
+      if (!targets.length) return;
+
+      document.documentElement.classList.add('sr-ready');
+
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('sr-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+      targets.forEach(function(el) { observer.observe(el); });
+
+      setTimeout(function() {
+        targets.forEach(function(el) {
+          if (!el.classList.contains('sr-visible')) {
+            el.classList.add('sr-visible');
+          }
+        });
+      }, 3000);
+    })();
+  </script>
+
+  <!-- ThinkWell Labs Network Footer -->
+  <footer style="margin-top:48px;padding:18px 0;border-top:1px solid rgba(255,255,255,.07);font-size:12px;color:rgba(255,255,255,.45);text-align:center;line-height:1.8">
+    <span style="font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:10px;color:rgba(255,255,255,.35);display:block;margin-bottom:6px">A ThinkWell Labs offering</span>
+    <a href="https://twl.today" style="color:rgba(255,255,255,.6);text-decoration:none">TWL</a>
+    <span style="margin:0 6px;opacity:.3">·</span>
+    <a href="https://arttra.art" style="color:rgba(255,255,255,.6);text-decoration:none">arttra</a>
+    <span style="margin:0 6px;opacity:.3">·</span>
+    <a href="https://cookiebouncer.app" style="color:rgba(255,255,255,.6);text-decoration:none">CookieBouncer</a>
+    <span style="margin:0 6px;opacity:.3">·</span>
+    <a href="https://errorfect.com" style="color:rgba(255,255,255,.8);font-weight:600;text-decoration:none">Errorfect</a>
+    <span style="margin:0 6px;opacity:.3">·</span>
+    <a href="https://acepaste.xyz" style="color:rgba(255,255,255,.6);text-decoration:none">Acepaste</a>
+  </footer>
+</body>
+</html>

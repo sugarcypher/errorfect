@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Errorfect — Control / Troll</title>
+  <meta name="description" content="A word-level autopsy of 'control': how a word that promises mastery functions as a threat-response clamp — the troll under the bridge that collects a toll in attention, flexibility, sleep, and tenderness — and how to swap it for influence." />
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* Background system: randomized Errorfect logo each load + legibility overlay */
+    .bg-layer{
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      filter: saturate(1.05) contrast(1.05);
+      transform: scale(1.02);
+    }
+
+    .bg-overlay{
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(0,245,255,0.10), rgba(0,0,0,0) 45%),
+        radial-gradient(circle at 70% 60%, rgba(255,0,110,0.10), rgba(0,0,0,0) 50%),
+        linear-gradient(180deg, rgba(0,0,0,0.68), rgba(0,0,0,0.86));
+      pointer-events: none;
+    }
+
+    body {
+      font-family: "Courier New", monospace;
+      background: transparent;
+      color: #e0e0e0;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Keep all content above overlay */
+    .hero, section, footer { position: relative; z-index: 2; }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      background: radial-gradient(circle at center, rgba(26,26,46,0.72) 0%, rgba(10,10,10,0.62) 100%);
+    }
+
+    .glitch-container {
+      position: relative;
+      font-size: clamp(3rem, 10vw, 8rem);
+      font-weight: bold;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .glitch {
+      position: relative;
+      color: #ff006e;
+      text-shadow: 0 0 20px rgba(255, 0, 110, 0.5);
+    }
+
+    .masked-letter {
+      color: #ff006e;
+      text-decoration: line-through;
+      opacity: 0.5;
+    }
+
+    .subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      color: #8892b0;
+      text-align: center;
+      margin-bottom: 3rem;
+      max-width: 980px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 2rem;
+      color: #00f5ff;
+      text-decoration: none;
+      font-size: 0.95rem;
+      letter-spacing: 0.04em;
+      border: 1px solid #00f5ff55;
+      padding: 0.4rem 0.9rem;
+      border-radius: 999px;
+      background: rgba(0, 245, 255, 0.06);
+      transition: all 0.3s ease;
+    }
+    .back-link:hover { border-color: #00f5ff; box-shadow: 0 0 18px rgba(0,245,255,0.25); }
+
+    .scroll-indicator {
+      font-size: 2rem;
+      animation: bounce 2s infinite;
+      color: #00f5ff;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(10px); }
+    }
+
+    section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      color: #ff006e;
+      margin-bottom: 2rem;
+      position: relative;
+      display: inline-block;
+    }
+
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, #ff006e, #00f5ff);
+    }
+
+    .field-notes {
+      background: linear-gradient(135deg, rgba(22,33,62,0.92) 0%, rgba(15,52,96,0.92) 100%);
+      padding: 3rem;
+      border-radius: 8px;
+      border-left: 4px solid #ff006e;
+      margin: 3rem 0;
+      backdrop-filter: blur(2px);
+    }
+
+    .field-notes p {
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+      color: #ccd6f6;
+    }
+    .field-notes p:last-child { margin-bottom: 0; }
+
+    .field-notes h3 {
+      color: #00f5ff;
+      margin: 0.5rem 0 1rem;
+      font-size: 1.25rem;
+      letter-spacing: 0.02em;
+    }
+
+    .key-insight {
+      background: rgba(10,10,10,0.85);
+      padding: 2rem;
+      border-radius: 8px;
+      border: 2px solid #00f5ff;
+      margin: 2rem 0;
+      font-size: 1.2rem;
+      color: #00f5ff;
+      text-align: center;
+      font-weight: bold;
+      backdrop-filter: blur(2px);
+    }
+
+    .surgical {
+      color: #ff006e;
+      font-style: italic;
+    }
+
+    .word-reveal {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+
+    .revealed-word {
+      color: #00f5ff;
+      display: block;
+      font-size: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .arrow {
+      display: inline-block;
+      color: #ff006e;
+      margin: 0 1rem;
+      font-size: 1.5rem;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.85rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid #00f5ff55;
+      color: #00f5ff;
+      margin: 0.2rem 0.35rem 0 0;
+      background: rgba(0, 245, 255, 0.06);
+      white-space: nowrap;
+    }
+
+    .protocol-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0 1rem;
+    }
+
+    .protocol-step {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid #00f5ff33;
+      border-radius: 10px;
+      padding: 1.25rem 1.25rem 1.1rem;
+      backdrop-filter: blur(2px);
+    }
+
+    .protocol-step h3 {
+      color: #00f5ff;
+      margin-bottom: 0.65rem;
+      font-size: 1.1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .protocol-step p {
+      color: #ccd6f6;
+      margin-bottom: 0.75rem;
+      line-height: 1.65;
+      font-size: 1rem;
+    }
+    .protocol-step p:last-child { margin-bottom: 0; }
+
+    .protocol-step .small {
+      color: #8892b0;
+      font-size: 0.95rem;
+    }
+
+    .step-num {
+      color: #ff006e;
+      font-weight: bold;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+
+    .micro-protocol {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px dashed #00f5ff55;
+      background: rgba(0, 0, 0, 0.35);
+      color: #ccd6f6;
+      line-height: 1.7;
+    }
+    .micro-protocol strong { color: #00f5ff; }
+
+    .loop-list {
+      list-style: none;
+      counter-reset: loop;
+      margin: 1rem 0 0;
+    }
+    .loop-list li {
+      counter-increment: loop;
+      position: relative;
+      padding: 0.75rem 0 0.75rem 2.5rem;
+      color: #ccd6f6;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .loop-list li:last-child { border-bottom: none; }
+    .loop-list li::before {
+      content: counter(loop);
+      position: absolute;
+      left: 0;
+      top: 0.75rem;
+      width: 1.6rem;
+      height: 1.6rem;
+      line-height: 1.6rem;
+      text-align: center;
+      border-radius: 50%;
+      background: rgba(255,0,110,0.12);
+      border: 1px solid #ff006e88;
+      color: #ff006e;
+      font-weight: bold;
+      font-size: 0.85rem;
+    }
+    .loop-list strong { color: #00f5ff; }
+
+    .reveal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      margin: 3rem 0;
+    }
+
+    .reveal-card {
+      background: rgba(22,33,62,0.92);
+      padding: 2rem;
+      border-radius: 8px;
+      border: 1px solid #ff006e33;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(2px);
+    }
+    .reveal-card:hover {
+      transform: translateY(-5px);
+      border-color: #ff006e;
+      box-shadow: 0 10px 30px rgba(255, 0, 110, 0.2);
+    }
+    .reveal-card h3 { color: #00f5ff; margin-bottom: 1rem; font-size: 1.2rem; }
+    .reveal-card .mechanism { color: #ccd6f6; line-height: 1.8; }
+    .reveal-card .mechanism strong { color: #00f5ff; }
+
+    .fn {
+      color: #00f5ff;
+      text-decoration: none;
+      font-size: 0.7em;
+      vertical-align: super;
+      padding: 0 1px;
+    }
+    .fn:hover { text-shadow: 0 0 8px rgba(0,245,255,0.6); }
+
+    .sources {
+      list-style: none;
+      margin-top: 1rem;
+    }
+    .sources li {
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      color: #8892b0;
+      font-size: 0.98rem;
+    }
+    .sources li:last-child { border-bottom: none; }
+    .sources .num { color: #ff006e; margin-right: 0.5rem; }
+    .sources a { color: #00f5ff; text-decoration: none; word-break: break-word; }
+    .sources a:hover { text-decoration: underline; }
+
+    footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      border-top: 1px solid #ff006e33;
+      color: #8892b0;
+    }
+
+    @media (max-width: 768px) {
+      .protocol-grid { grid-template-columns: 1fr; }
+      .reveal-grid { grid-template-columns: 1fr; }
+      .field-notes { padding: 2rem 1.5rem; }
+    }
+
+    /* Scroll reveal: CSS-driven, fails visible */
+    .sr {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .sr-ready .sr {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    .sr-ready .sr.sr-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg-layer" id="bgLayer"></div>
+  <div class="bg-overlay"></div>
+
+  <div class="hero">
+    <a class="back-link" href="index.html">← Errorfect — The Linguistic Autopsy</a>
+
+    <div class="glitch-container">
+      <div class="glitch">
+        <span class="masked-letter">C</span>ontrol <span style="color:#00f5ff;">troll</span>
+      </div>
+    </div>
+
+    <div class="subtitle">
+      A word-level autopsy of <strong>"control"</strong>: identity, etymology, neuro-mechanics, protocol, and poetic exposition.
+      <br /><br />
+      <span class="surgical">Control</span> promises mastery over systems that don't obey mastery. In practice it functions as a threat-response clamp — the <span class="surgical">troll</span> under the bridge that takes a toll for the illusion of safety.
+    </div>
+
+    <div class="scroll-indicator">↓</div>
+  </div>
+
+  <section>
+    <h2>The Core Object</h2>
+    <div class="field-notes sr">
+      <p>
+        "Control" sells itself as competence: the steady hand, the firm grip, the system held in line.<a class="fn" href="#s1">[1]</a><a class="fn" href="#s3">[3]</a> But when you slow the tape, what you usually find underneath is not mastery — it's <span class="surgical">fear wearing the mask of competence</span>, demanding that the world feel obedient before you can feel safe.
+      </p>
+      <p>
+        A <span class="surgical">control clamp</span> is the behavioral object: a threat-response routine that tightens its grip on people, outcomes, and uncertainty that were never inside your reach to begin with.<a class="fn" href="#s4">[4]</a>
+      </p>
+    </div>
+
+    <div class="reveal-grid">
+      <div class="reveal-card sr">
+        <h3>The Identity</h3>
+        <div class="mechanism">
+          <strong>Surface presentation:</strong> "I'm on top of this. I've got it handled."<br /><br />
+          <strong>What it actually is:</strong> fear dressed as competence.<br /><br />
+          <strong>The promise:</strong> mastery over systems — other people, the future, your own body — that do not obey mastery.<br /><br />
+          <strong>Result:</strong> you clamp harder on the ungovernable and call the strain "responsibility."
+        </div>
+      </div>
+      <div class="reveal-card sr">
+        <h3>The Word</h3>
+        <div class="word-reveal">
+          <span class="masked-letter">C</span>ontrol
+        </div>
+        <div class="revealed-word">
+          <span class="arrow">→</span> <strong>troll</strong>
+        </div>
+        <div class="mechanism">
+          Strip "con" off the front and you expose the creature under the bridge: a <strong>troll</strong> that takes a <em>toll</em> from everyone trying to cross.<br /><br />
+          Go deeper into etymology and the seam widens. "Control" descends from medieval Latin <strong>contra-rotulus</strong> — Anglo-French <em>contre-rôle</em>, "to keep a counter-roll."<a class="fn" href="#s2">[2]</a> A <strong>duplicate ledger</strong> kept beside the original, only to audit it for discrepancy. <span class="surgical">Control originally means keeping a second copy of reality to check it against the first.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Linguistic Autopsy</h2>
+    <div class="field-notes sr">
+      <p>
+        Errorfect lens: <strong>"control" is not just a capability; it's an operator.</strong><a class="fn" href="#s4">[4]</a><a class="fn" href="#s5">[5]</a>
+      </p>
+
+      <h3>Literal vs. functional meaning</h3>
+      <p>
+        <strong>Literal dictionary sense:</strong> "to exercise restraining or directing influence over; to have power over."<a class="fn" href="#s1">[1]</a><a class="fn" href="#s3">[3]</a>
+      </p>
+      <p>
+        <strong>What it functions as in the threat script:</strong> a <span class="surgical">clamp</span>. "Control" promises mastery, but in the body it operates as a threat-response: tighten the grip, narrow the field, refuse the uncertainty.
+      </p>
+      <p>
+        So "control" masquerades as competence, but in practice it's a <strong>policy selector</strong> — and the policy it selects is <em>clamp harder</em>, even on systems that were never yours to govern.
+      </p>
+
+      <h3>The duplicate-ledger demand</h3>
+      <p>
+        The old <em>contre-rôle</em> sense never left.<a class="fn" href="#s2">[2]</a> To "control" is to keep a second copy of reality and audit the real one for discrepancy. Done to a balance sheet, that's accounting. Done to your life, it's a full-time, unpaid post: maintaining a perfect parallel model of how everything <em>should</em> be, then policing the world for the gap.
+      </p>
+    </div>
+
+    <div class="key-insight sr">
+      The troll under the bridge doesn't stop you for nothing.<br />
+      It collects a toll: your attention, your flexibility, your sleep, your tenderness.
+    </div>
+  </section>
+
+  <section>
+    <h2>Neuro-Mechanics</h2>
+    <div class="field-notes sr">
+      <p>The loop, structured in system terms — first the trap, then the antidote.</p>
+
+      <div class="protocol-grid">
+        <div class="protocol-step sr">
+          <h3>The default control-clamp loop (the trap)</h3>
+          <p><span class="step-num">Threat detected</span> Limbic system flags uncertainty: an outcome, a person, a future you can't guarantee.</p>
+          <p><span class="step-num">Script invocation</span> The language system outputs "I must control this." The phrase functions as policy: <em>clamp</em>.</p>
+          <p><span class="step-num">Clamp harder</span> You over-monitor, micromanage, rehearse, restrict — you tighten the grip on the ungovernable.</p>
+          <p><span class="step-num">Brief relief</span> Threat drops for a moment; the grip <em>feels</em> like safety, and the brain tags clamping as effective.</p>
+          <p><span class="step-num">The world still doesn't obey</span> People deviate, the future arrives unannounced, the body does what bodies do. The gap reopens.</p>
+          <p><span class="step-num">More clamping</span> The model interprets the gap as "not enough control yet," so it clamps harder still.</p>
+          <p class="small">A closed loop: the toll compounds — attention, flexibility, sleep, tenderness — and the safety never arrives.</p>
+        </div>
+
+        <div class="protocol-step sr">
+          <h3>The influence loop (the antidote)</h3>
+          <p><span class="step-num">Swap the verb</span> Replace <em>control</em> with <strong>influence</strong>. Mastery was never on the table; leverage sometimes is.</p>
+          <p><span class="step-num">Identify one lever</span> Prefrontal cortex names exactly one lever you can actually pull right now — not ten, not the weather, one.</p>
+          <p><span class="step-num">Act on it</span> You pull that single lever. The grip releases everywhere else by necessity.</p>
+          <p><span class="step-num">Tolerate the uncertainty on the rest</span> You let the ungovernable remain ungoverned and stay in the room with the discomfort.</p>
+          <p><span class="step-num">Evidence generation</span> The system observes: "I released, and nothing collapsed."<a class="fn" href="#s4">[4]</a> Release is logged as survivable.</p>
+          <p class="small">The loop becomes: influence → one lever → release → evidence → less clamping. The toll stops compounding.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>The Pattern Card</h2>
+    <div class="field-notes sr">
+      <p>
+        <span class="tag">Threat-response clamp</span>
+        <span class="tag">Linguistic stall-script</span>
+        <span class="tag">Duplicate-ledger demand</span>
+      </p>
+      <h3>Name: the control clamp (the troll under the bridge)</h3>
+      <p>
+        <strong>Signature phrase:</strong> "I need to control this." / "I have to keep it together."<br />
+        <strong>Variants:</strong> "If I don't stay on top of this, it falls apart," "I just need everything in place first," "Nobody else will do it right."
+      </p>
+      <p>
+        <strong>Mechanism:</strong> uses the word "control" to convert fear into a clamp — tightening the grip on people, outcomes, and uncertainty that don't obey mastery. It promises safety and instead collects a toll, because the duplicate ledger of "how it should be" can never be reconciled with the moving world.<a class="fn" href="#s2">[2]</a>
+      </p>
+      <p>
+        <strong>Neural substrate (high-level):</strong> the limbic system reads uncertainty as danger and biases toward clamping = safety, even when clamping costs more than it returns; the prefrontal cortex is under-used, its capacity for nuanced influence collapsed into a single binary, on/off grip.
+      </p>
+      <p>
+        <strong>Behavioral markers:</strong> over-monitoring, rigidity, sleeplessness, micromanagement, and a chronic dread of uncertainty; relief the moment you "take charge," followed by deeper depletion as the grip fails to hold.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Intervention Protocol</h2>
+    <div class="field-notes sr">
+      <p>An Errorfect-style four-step move for catching and breaking the clamp in real time.</p>
+
+      <div class="protocol-grid">
+        <div class="protocol-step sr">
+          <h3>1 — Catch</h3>
+          <p>Trigger: any thought or utterance using "control" — "I need to control this," "I have to keep it together."</p>
+          <p>Ask: <strong>"Is this real agency, or fear demanding the feeling of mastery?"</strong></p>
+          <p class="small">"I control my hands on the wheel" = real agency, fine. "I need to control how they react" = fear demanding mastery over the ungovernable, suspect.</p>
+        </div>
+
+        <div class="protocol-step sr">
+          <h3>2 — Expose</h3>
+          <p>Strip the word: <strong>Control → troll</strong>. Name the creature under the bridge and name what it's charging you.</p>
+          <p>Label it: <strong>"This is the troll collecting a toll."</strong></p>
+          <p class="small">Itemize the toll out loud: my attention, my flexibility, my sleep, my tenderness. The clamp never disclosed its price.</p>
+        </div>
+
+        <div class="protocol-step sr">
+          <h3>3 — Swap the verb</h3>
+          <p>Replace <strong>control</strong> with <strong>influence</strong>. You can't master the system, but you can sometimes move it.</p>
+          <p>Then name <strong>exactly one lever you can pull now</strong> — one message, one boundary, one task, one breath.</p>
+          <div class="micro-protocol">
+            <strong>The recompiled axiom:</strong> "I don't need control; I need one lever and the nerve to release the rest."
+          </div>
+        </div>
+
+        <div class="protocol-step sr">
+          <h3>4 — Micro-action + evidence</h3>
+          <p>Pull the one lever you named. Then <em>deliberately release one thing</em> you'd normally clamp — un-send the follow-up, leave the detail un-checked, let someone else hold it.</p>
+          <p>Immediately log 1–2 lines of evidence: "I pulled one lever and released the rest. Outcome: nothing collapsed; the world kept moving without my grip."</p>
+          <p class="small">Closes the new loop: influence → lever → release → evidence → less clamping. A few cycles and the troll's toll starts to drop.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>control / the troll under the bridge</h2>
+    <div class="field-notes sr">
+      <p>
+        "Control" sounds like a statement of competence: <em>"I've got this handled."</em> But control is often just fear that learned to dress well. Underneath the steady voice is a nervous system that cannot tolerate not knowing, demanding that the world feel obedient before it will let you rest. <span class="surgical">Control is fear wearing the mask of competence.</span>
+      </p>
+      <p>
+        Run it through the Errorfect lens and strip the front off the word, and a creature crawls out: <strong>control → troll</strong>. The troll is the myth that if you clamp down hard enough — monitor more, plan more, hold the grip tighter — you will finally be safe. It is the thing that stops you at the bridge and won't let you cross until you pay.<a class="fn" href="#s2">[2]</a>
+      </p>
+      <p>
+        Here is the con. The troll never delivers safety. It only collects a toll. Pay it once and the bridge does not open; the toll simply comes due again, larger. Over months and years it takes the same four things from everyone: <span class="surgical">your attention, your flexibility, your sleep, your tenderness</span>. You hand them over believing each payment buys security, and the security never arrives, because the systems you're trying to master — other people, the future, your own body — were never going to obey a clamp.<a class="fn" href="#s1">[1]</a><a class="fn" href="#s3">[3]</a>
+      </p>
+      <p>
+        The deepest cut is in the word itself. "Control" comes from the <em>contre-rôle</em> — a duplicate ledger kept only to audit the real one for discrepancy.<a class="fn" href="#s2">[2]</a> To live in control is to keep a second, perfect copy of how everything <em>should</em> be, and to spend your life policing the gap between the copy and the world. The gap never closes. It is not supposed to. The world is the original; your ledger is just paper.
+      </p>
+      <ul class="loop-list">
+        <li>You feel the uncertainty and read it as danger.</li>
+        <li>You clamp — monitor, micromanage, rehearse, restrict.</li>
+        <li>You feel a brief relief, and mistake the grip for safety.</li>
+        <li>The world doesn't obey, the gap reopens, and you clamp harder.</li>
+      </ul>
+      <p style="margin-top:1.5rem;">
+        That brief relief is the troll's fee, collected in advance. The nervous system gets a tiny reward for tightening, so the loop stabilizes and the toll compounds. You call it "being responsible." Under the bridge, we'd call it <span class="surgical">paying a toll for a crossing that never opens</span>.
+      </p>
+    </div>
+
+    <div class="key-insight sr">
+      The antidote is not "no agency."<br />
+      It is a verb swap: control → influence — then one lever you can pull, while you release the rest.
+    </div>
+
+    <div class="field-notes sr">
+      <p>
+        You don't break the clamp by trying harder to control. You break it by changing the verb. Swap <strong>control</strong> for <strong>influence</strong> and the whole geometry changes: you stop demanding mastery over the ungovernable and start asking the only useful question — <em>"What is the one lever I can actually pull right now?"</em> Pull it. Then release everything else on purpose, and watch.<a class="fn" href="#s4">[4]</a>
+      </p>
+      <p>
+        What you'll find is evidence: you let go, and nothing collapsed. The bridge was never guarded by anything but a story. <span class="surgical">Influence is real; control is the troll.</span> You don't need it. You need one lever, and the nerve to release the rest.<a class="fn" href="#s5">[5]</a>
+      </p>
+    </div>
+  </section>
+
+  <section id="sources">
+    <h2>Sources</h2>
+    <div class="field-notes sr">
+      <ol class="sources">
+        <li id="s1"><span class="num">[1]</span> CONTROL — Definition &amp; Meaning. <a href="https://www.merriam-webster.com/dictionary/control" target="_blank" rel="noopener">Merriam-Webster</a></li>
+        <li id="s2"><span class="num">[2]</span> control | etymology (Anglo-French "contreroller," to keep a counter-roll / duplicate register). <a href="https://www.etymonline.com/word/control" target="_blank" rel="noopener">Online Etymology Dictionary</a></li>
+        <li id="s3"><span class="num">[3]</span> CONTROL — definition in the Cambridge English Dictionary. <a href="https://dictionary.cambridge.org/us/dictionary/english/control" target="_blank" rel="noopener">Cambridge Dictionary</a></li>
+        <li id="s4"><span class="num">[4]</span> Errorfect — The Linguistic Autopsy. <a href="https://errorfect.com" target="_blank" rel="noopener">errorfect.com</a></li>
+        <li id="s5"><span class="num">[5]</span> ThinkWell Labs — Upstream Architectures. <a href="https://twl.today" target="_blank" rel="noopener">twl.today</a></li>
+      </ol>
+    </div>
+  </section>
+
+  <footer>
+    <p>Errorfect Developed by Briar Greenway &amp; ThinkWell Labs © 2026 | A linguistic autopsy</p>
+    <p style="margin-top: 1rem; font-size: 0.9rem;">Disruption reveals attachment; attachment reveals mechanism.</p>
+    <p style="margin-top: 1.5rem;"><a href="index.html" style="color:#00f5ff;text-decoration:none;">← Back to the Linguistic Autopsy</a></p>
+  </footer>
+
+  <script>
+    // Randomized Errorfect logo background
+    (function setRandomBackground() {
+      const backgrounds = [
+        "FAFDF64A-78C7-43CF-9C14-6D71D5466B60.png",
+        "12E9D59D-4ECC-4634-9538-5DEDBB231E70.png",
+        "2C085A63-6E1D-4681-8980-BE6E655BCA72.png",
+        "4BBC46C5-FFD6-4E6C-B16E-789F6FF285EF.png",
+        "657AF014-74E0-491A-9E68-36A7601AF066.png",
+        "820F6A31-9A5C-4710-A6BD-1FDF95DCF802.png",
+        "9F69218D-CA43-4CE4-B3A0-D1F06DBC43D1.png"
+      ];
+      const pick = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+      const layer = document.getElementById("bgLayer");
+      if (!layer) return;
+      const img = new Image();
+      img.onload = () => { layer.style.backgroundImage = `url("${pick}")`; };
+      img.onerror = () => { layer.style.backgroundImage = "none"; };
+      img.src = pick;
+    })();
+
+    // Subtle glitch effect on scroll
+    window.addEventListener('scroll', () => {
+      const scrolled = window.pageYOffset;
+      const glitch = document.querySelector('.glitch');
+      if (!glitch) return;
+      if (scrolled > 100) {
+        glitch.style.textShadow = `${Math.random() * 5}px ${Math.random() * 5}px 20px rgba(255, 0, 110, 0.5)`;
+      }
+    });
+
+    // Scroll reveal: fails VISIBLE if observer never fires
+    (function initScrollReveal() {
+      if (!('IntersectionObserver' in window)) return;
+
+      var targets = document.querySelectorAll('.sr');
+      if (!targets.length) return;
+
+      document.documentElement.classList.add('sr-ready');
+
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('sr-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+      targets.forEach(function(el) { observer.observe(el); });
+
+      setTimeout(function() {
+        targets.forEach(function(el) {
+          if (!el.classList.contains('sr-visible')) {
+            el.classList.add('sr-visible');
+          }
+        });
+      }, 3000);
+    })();
+  </script>
+
+  <!-- ThinkWell Labs Network Footer -->
+  <footer style="margin-top:48px;padding:18px 0;border-top:1px solid rgba(255,255,255,.07);font-size:12px;color:rgba(255,255,255,.45);text-align:center;line-height:1.8">
+    <span style="font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:10px;color:rgba(255,255,255,.35);display:block;margin-bottom:6px">A ThinkWell Labs offering</span>
+    <a href="https://twl.today" style="color:rgba(255,255,255,.6);text-decoration:none">TWL</a>
+    <span style="margin:0 6px;opacity:.3">·</span>
+    <a href="https://arttra.art" style="color:rgba(255,255,255,.6);text-decoration:none">arttra</a>
+    <span style="margin:0 6px;opacity:.3">·</span>
+    <a href="https://cookiebouncer.app" style="color:rgba(255,255,255,.6);text-decoration:none">CookieBouncer</a>
+    <span style="margin:0 6px;opacity:.3">·</span>
+    <a href="https://errorfect.com" style="color:rgba(255,255,255,.8);font-weight:600;text-decoration:none">Errorfect</a>
+    <span style="margin:0 6px;opacity:.3">·</span>
+    <a href="https://acepaste.xyz" style="color:rgba(255,255,255,.6);text-decoration:none">Acepaste</a>
+  </footer>
+</body>
+</html>
